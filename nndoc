@@ -1,0 +1,372 @@
+1. Fuzzy Set Operations
+clc;
+clear all;
+close all;
+a=input('Enter the first array');
+b=input('Enter the second array');
+disp('1=Complement 2=Union 3=Intersection 4=De Morgan Law');
+choice=input('Enter your choice: ');
+switch choice
+    case 1
+        a1=1-a;
+        b1=1-b;
+        disp('Complement of A is');
+        disp(a1);
+        disp('Complement of B is');
+        disp(b1);
+    case 2
+        union=max(a,b);
+        disp('A U B= ');
+        disp(union);
+    case 3
+        intersect=min(a,b);
+        disp('A n B= ');
+        disp(intersect);
+    case 4
+        u=max(a,b);
+        LHS=1-u;
+        disp('LHS=');
+        disp(LHS);
+        a1=1-a;
+        b1=1-b;
+        RHS=min(a1,b1);
+        disp('RHS=');
+        disp(RHS);
+        if LHS==RHS
+            disp('De Morgans Theorem is satisfied');
+        else
+            disp('De Morgans Theorem is not satisfied');
+        end
+end
+
+2. EX-OR using MLP
+clc;
+clear all;
+close all;
+p=[1 1 -1 -1;1 -1 1 -1];
+t=[-1 1 1 -1];
+s1=4;
+s2=1;
+net=newff(minmax(p),[s1 s2]);
+net.trainParam.goal=0.001;
+net.trainParam.epoch=1000;
+net.trainParam.lr=0.1;
+net=train(net,p,t);
+y=sim(net,p);
+y1=round(y)
+view(net)
+
+3. EX-OR using RBF
+clc;
+clear all;
+close all;
+p=[1 1 -1 -1;1 -1 1 -1];
+t=[-1 1 1 -1];
+net=newrb(p,t);
+y=sim(net,p)
+y1=round(y)
+view(net)
+
+4. AND using Perceptron
+(Option 1)
+clc;
+clear all;
+close all;
+p=[1 1 -1 -1;1 -1 1 -1];
+t=[1 -1 -1 -1];
+alpha=0.1;
+theta=0.2;
+w1=rand;
+w2=rand;
+w=[w1 w2];
+b=0;
+flag=1;
+itrw=0;
+itr=0;
+hold on
+axis([-2 2 -2 2]);
+plot(p(1,1),p(2,1),'o');
+plot(p(1,2),p(2,2),'*');
+plot(p(1,3),p(2,3),'*');
+plot(p(1,4),p(2,4),'*');
+linehandle=plotpc(w,b);
+pause;
+while(flag==1)
+    flag=0;
+    itrw=itrw+1;
+    for i=1:4
+        yin=(p(1,i)*w(1))+(p(2,i)*w(2))+b;
+        if yin>theta
+            y=1;
+        end
+        if y<-theta
+            y=-1;
+        end
+        if -theta<=yin<=theta
+            y=0;
+        end
+        if y~=t(i)
+            flag=1;
+            w(1)=w(1)+(alpha*t(i)*p(1,i));
+            w(2)=w(2)+(alpha*t(i)*p(2,i));
+            b=b+(alpha*t(i));
+        end
+    end
+    itr=itr+1;
+    w(1)
+    w(2)
+    b
+    linehandle=plotpc(w,b,linehandle);
+    pause;
+end
+
+(Option 2)
+clc;
+clear all;
+close all;
+p=[1 -1 1 -1 ; 1 1 -1 -1];
+w=(rands(2))';
+b=1;
+t=[1 -1 -1 -1];
+alpha=0.2;
+theta=1;
+flag=1;
+epo=0;
+ 
+hold on
+axis([-2 2 -2 2]);
+plot(p(1,1),p(2,1),'x');
+plot(p(1,2),p(2,2),'o');
+plot(p(1,3),p(2,3),'o');
+plot(p(1,4),p(2,4),'o');
+line=plotpc(w,b);
+pause
+ 
+while flag
+    flag=0;
+    for i=1:4
+        yin=b+p(1,i)*w(1)+p(2,i)*w(2);
+        if yin>theta
+            y=1;
+        end
+        if yin>=-(theta)&&yin<=theta
+            y=0;
+        end
+        if yin<-(theta)
+            y=-1;
+        end
+        
+        if y~=t(i)
+            flag=1;
+            for j=1:2
+                w(j)=w(j)+alpha*t(i)*p(j,i);
+            end
+            b=b+alpha*t(i);
+        end
+    end
+    epo=epo+1;
+    line=plotpc(w,b,line);
+  
+    
+end
+ 
+disp('Final Weights');
+disp(w);
+disp('Epochs');
+disp(epo);
+
+6. Character/Pattern Recognition using MLP
+clc;
+clear all;
+close all;
+[digit1,digit2,digit3,digit4,digit5,digit6,digit7,digit8,digit9,digit0]=bit_maps();
+p=[digit1(:) digit2(:) digit3(:) digit4(:) digit5(:) digit6(:) digit7(:) digit8(:) digit9(:) digit0(:)];
+t=eye(10);
+net=newff(minmax(p),[20 10]);
+net.trainParam.goal=0.001;
+net.trainParam.epoch=1000;
+net.trainParam.lr=0.1
+net1=train(net,p,t);
+test=digit9(:);
+y=sim(net1,test)
+y1=round(y)
+view(net)
+
+7. Character/Pattern Recognition using RBF
+clc;
+clear all;
+close all;
+[digit1,digit2,digit3,digit4,digit5,digit6,digit7,digit8,digit9,digit0]=bit_maps();
+p=[digit1(:) digit2(:) digit3(:) digit4(:) digit5(:) digit6(:) digit7(:) digit8(:) digit9(:) digit0(:)];
+t=eye(10);
+net=newrbe(p,t);
+test=digit9(:);
+y=sim(net,test)
+y1=round(y)
+view(net)
+
+8. RBF for Function Approximation
+clc;
+clear al;
+close all;
+x=0:0.25:4
+y=sin(pi.*x)+cos(pi.*x);
+net=newrbe(x,y);
+x1=0:0.2:4;
+y1=sim(net,x1);
+view(net);
+figure(1)
+plot(x,y,'*');
+hold on
+plot(x1,y1,'o');
+legend('Training','Testing');
+xlabel('Inputs');
+ylabel('Targets');
+
+9. Non-linearly Separable Data Classifier using RBF
+clc;
+clear all;
+close all;
+A=[rand(1,100);rand(1,100)];
+B=[rand(1,100);-rand(1,100)];
+C=[-rand(1,100);rand(1,100)];
+D=[-rand(1,100);-rand(1,100)];
+P=[A(:,1:80) B(:,1:80) C(:,1:80) D(:,1:80)];
+A1=[1;0;0;0];
+B1=[0;1;0;0];
+C1=[0;0;1;0];
+D1=[0;0;0;1];
+A2=repmat(A1,1,80);
+B2=repmat(B1,1,80);
+C2=repmat(C1,1,80);
+D2=repmat(D1,1,80);
+T=[A2 B2 C2 D2];
+net=newrb(P,T);
+y=sim(net,A(:,81:100));
+view(net);
+figure(1)
+hold on
+plot(A(1,:),A(2,:),'*');
+plot(B(1,:),B(2,:),'o');
+plot(C(1,:),C(2,:),'^');
+plot(D(1,:),D(2,:),'+');
+text(0.5,0.5,'Class A');
+text(0.5,-0.5,'Class B');
+text(-0.5,0.5,'Class C');
+text(-0.5,-0.5,'Class D');
+
+10. Non-linearly Separable Data Classifier using MLP
+clc;
+clear all;
+close all;
+A=[rand(1,100);rand(1,100)];
+B=[rand(1,100);-rand(1,100)];
+C=[-rand(1,100);rand(1,100)];
+D=[-rand(1,100);-rand(1,100)];
+P=[A(:,1:80) B(:,1:80) C(:,1:80) D(:,1:80)];
+A1=[1;0;0;0];
+B1=[0;1;0;0];
+C1=[0;0;1;0];
+D1=[0;0;0;1];
+A2=repmat(A1,1,80);
+B2=repmat(B1,1,80);
+C2=repmat(C1,1,80);
+D2=repmat(D1,1,80);
+T=[A2 B2 C2 D2];
+net=newff(P,T,[320 4]);
+net.trainParam.goal=0.001;
+net.trainParam.epoch=1000;
+net.trainParam.lr=0.1;
+net1=train(net,P,T);
+y=sim(net,A(:,81:100));
+y1=round(y)
+view(net);
+figure(1)
+hold on
+plot(A(1,:),A(2,:),'*');
+plot(B(1,:),B(2,:),'o');
+plot(C(1,:),C(2,:),'^');
+plot(D(1,:),D(2,:),'+');
+text(0.5,0.5,'Class A');
+text(0.5,-0.5,'Class B');
+text(-0.5,0.5,'Class C');
+text(-0.5,-0.5,'Class D');
+
+11. SOM for image classification
+clc;
+clear all;
+close all;
+a=imread('rice.png');
+figure(1)
+subplot(1,2,1)
+imshow(a);
+title('Original Image');
+a=double(a);
+c=reshape(a,1,65536);
+p=c(:,1:80);
+net=newsom(minmax(9),[1 2]);
+net1=train(net,p);
+y=sim(net1,c);
+disp(y);
+for i=1:65536
+    if (y(1,i)==1)
+        d(i)=255;
+    else
+        d(i)=0;
+    end
+end
+e=reshape(d,256,256);
+subplot(1,2,2)
+imshow(uint8(e));
+title('Classified Image');
+
+12. Edge detection using Fuzzy
+clc;
+clear all;
+close all;
+I=imread('cameraman.tif');
+I=im2double(I);
+ix=[-1 1];
+iy=ix';
+yx=conv2(I,ix);
+yy=conv2(I,iy);
+ 
+fis=readfis('NNFL4b.fis');
+getfis(fis);
+for i=1:254
+    for j=1:254
+        output(i,j)=evalfis([yx(i,j) yy(i,j)],fis);
+    end
+end
+figure(1);
+subplot(2,2,1);
+imshow(I);
+title('Original Image');
+subplot(2,2,2);
+imshow(output);
+title('Output');
+
+
+13. Perform the following classifications MLP network. The vectors (1 1 1 1); (-1 1 -1 -1) are members of one class (target =1). Vectors (1 1 1 -1) and (1 -1 -1 1) are not members of the class (target = -1).
+clc;
+clear all;
+close all;
+p=[1 1 1 1;-1 1 -1 -1;1 1 1 -1; 1 -1 -1 1];
+t=[1 1 -1 -1];
+net=newff(minmax(p),[8 1]);
+net.trainParam.goal=0.001;
+net.trainParam.epoch=1000;
+net.trainParam.lr=0.1;
+net1=train(net,p,t);
+y=round(sim(net1,p));
+disp(y);
+view(net)
+
+14. Construct Kohenan SOM to cluster four vectors [0 0 1 1], [1 0 0 1]; [0 1 0 1]; [1 1 1 1]. The max number of clusters is 2 
+clc
+close all
+clear all
+P=[0 0 1 1;1 0 0 1;0 1 0 1 ;1 1 1 1];
+net=newsom(minmax(p),[1,2]);
+net1=train(net,P);
+a=sim(net1,P);
